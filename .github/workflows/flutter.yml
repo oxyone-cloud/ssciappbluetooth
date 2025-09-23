@@ -1,27 +1,42 @@
-name: Flutter CI
+name: Flutter CI - Build APK
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📥 Checkout du code
-        uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: ⚙️ Installer Flutter
+      - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.0'
+          flutter-version: '3.22.0' # adapte si besoin
 
-      - name: 📦 Installer les dépendances
+      - name: Install dependencies
+        working-directory: Mon_app-flutter-
         run: flutter pub get
 
-      - name: 🛠️ Vérifier la compilation
-        run: flutter build apk --debug
+      - name: Build APK
+        working-directory: Mon_app-flutter-
+        run: flutter build apk --release
 
+      - name: List APK outputs (debug)
+        working-directory: Mon_app-flutter-
+        run: ls -R build/app/outputs
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-apk
+          path: |
+            Mon_app-flutter-/build/app/outputs/flutter-apk/app-release.apk
+            Mon_app-flutter-/build/app/outputs/apk/release/app-release.apk
